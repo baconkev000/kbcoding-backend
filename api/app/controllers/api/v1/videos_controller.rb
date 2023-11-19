@@ -35,6 +35,6 @@ class Api::V1::VideosController < ApplicationController
 
   private
     def video_params
-      params.require(:video).permit(:name, :section_id, :completed)
+      params.require(:video).permit(:name, :section_id, :video, :completed)
     end
 end

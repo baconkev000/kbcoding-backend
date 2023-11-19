@@ -1,4 +1,4 @@
 class SectionSerializer < ActiveModel::Serializer
-  attributes :id, :name
+  attributes :id, :name, :videos
   has_many :videos
 end
