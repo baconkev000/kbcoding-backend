@@ -10,34 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_10_31_044903) do
+ActiveRecord::Schema[7.1].define(version: 2023_11_24_211508) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "course_types", force: :cascade do |t|
+  create_table "project_types", force: :cascade do |t|
     t.string "name"
     t.string "color"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "courses", force: :cascade do |t|
+  create_table "projects", force: :cascade do |t|
     t.string "name"
     t.string "description"
-    t.bigint "course_type_id", null: false
+    t.bigint "project_type_id", null: false
     t.boolean "completed"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["course_type_id"], name: "index_courses_on_course_type_id"
-  end
-
-  create_table "sections", force: :cascade do |t|
-    t.string "name"
-    t.bigint "course_id", null: false
-    t.boolean "completed"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["course_id"], name: "index_sections_on_course_id"
+    t.index ["project_type_id"], name: "index_projects_on_project_type_id"
   end
 
   create_table "videos", force: :cascade do |t|
@@ -50,7 +41,5 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_31_044903) do
     t.index ["section_id"], name: "index_videos_on_section_id"
   end
 
-  add_foreign_key "courses", "course_types"
-  add_foreign_key "sections", "courses"
-  add_foreign_key "videos", "sections"
+  add_foreign_key "projects", "project_types"
 end

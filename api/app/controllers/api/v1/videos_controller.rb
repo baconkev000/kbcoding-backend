@@ -9,7 +9,7 @@ class Api::V1::VideosController < ApplicationController
     if videos
       render json:videos, status:200
     else
-      render json: {error: "Error finding course"}, status:404
+      render json: {error: "Error finding video"}, status:404
     end
   end
 
@@ -19,7 +19,7 @@ class Api::V1::VideosController < ApplicationController
     if videos.save
       render json:videos, status:200
     else
-      render json: {error: "Error creating course"}, status:400
+      render json: {error: "Error creating video"}, status:400
     end
   end
 
@@ -29,7 +29,7 @@ class Api::V1::VideosController < ApplicationController
     if videos.update(video_params)
       render json:videos, status:200
     else
-      render json: {error: "Error updating course"}, status:400
+      render json: {error: "Error updating video"}, status:400
     end
   end
 
