@@ -37,11 +37,11 @@ class Api::V1::ProjectsController < ApplicationController
     project = Project.find(params[:id])
     project.destroy
 
-    redirect_to :api_v1_root , status: :see_other
+    redirect_to :controller => 'projects', :action => 'index' , status: :see_other
   end
 
   private
     def project_params
-      params.require(:project).permit(:name, :description, :project_type_id, :completed)
+      params.require(:project).permit(:title, :overview, :description, :project_type_id, :completed)
     end
 end
