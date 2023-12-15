@@ -14,23 +14,30 @@ class Api::V1::ProjectsController < ApplicationController
   end
 
   def create
-    projects = Project.new(project_params)
+    project = Project.new(project_params)
 
-    if projects.save
-      render json:projects, status:200
+    if project.save
+      render json:project, status:200
     else
       render json: {error: "Error creating project"}, status:400
     end
   end
 
   def update
-    projects = Project.find(params[:id])
+    project = Project.find(params[:id])
 
-    if projects.update(project_params)
-      render json:projects, status:200
+    if project.update(project_params)
+      render json:project, status:200
     else
       render json: {error: "Error updating project"}, status:400
     end
+  end
+
+  def destroy
+    project = Project.find(params[:id])
+    project.destroy
+
+    redirect_to :api_v1_root , status: :see_other
   end
 
   private
