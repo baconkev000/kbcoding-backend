@@ -1,7 +1,11 @@
 from django.shortcuts import render
 from rest_framework import status, viewsets
+from rest_framework.response import Response
 from apps.projects.models import ProjectType,Project,ProjectMedia
 from apps.projects.serializers import ProjectMediaSerializer,ProjectSerializer,ProjectTypeSerializer
+import logging
+
+logger = logging.getLogger(__name__)
 
 class ProjectTypeViewSet(viewsets.ModelViewSet):
     """
