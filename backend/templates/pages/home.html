@@ -1,3 +1,73 @@
 {% extends "base.html" %}
 
+{% block content %}
+<section class="page-container">
+  <div id="projects-table-view" class="{% if show_form %}hidden{% endif %}">
+    <div class="page-header">
+      <div>
+        <p class="eyebrow">Manage Work</p>
+        <h1 class="page-title">Projects</h1>
+        <p class="page-subtitle">Review, edit, or remove projects from one place.</p>
+      </div>
+      <button type="button" id="show-add-form-btn" class="btn btn-primary">+ Add a Project</button>
+    </div>
 
+    <div class="table-wrapper">
+      <table class="projects-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th class="actions-col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for project in projects %}
+            <tr>
+              <td>
+                <div class="project-name">{{ project.title }}</div>
+                {% if project.project_type %}
+                  <div class="project-type-pill" style="--type-color: {{ project.project_type.color }};">
+                    {{ project.project_type.name }}
+                  </div>
+                {% endif %}
+              </td>
+              <td class="project-description">{{ project.description }}</td>
+              <td class="actions-col">
+                <a href="{% url 'project_edit' project.pk %}" class="btn btn-secondary btn-sm">Edit</a>
+                <form method="post" action="{% url 'project_delete' project.pk %}" class="inline-form delete-form">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="3" class="empty-row">
+                <strong>No projects yet.</strong>
+                <span>Click "Add a Project" to create your first one.</span>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="project-form-view" class="{% if not show_form %}hidden{% endif %}">
+    <div class="page-header">
+      <div>
+        <p class="eyebrow">{% if form_mode == 'edit' %}Update Work{% else %}New Work{% endif %}</p>
+        <h1 class="page-title">
+          {% if form_mode == 'edit' %}Edit Project{% else %}Add a Project{% endif %}
+        </h1>
+        <p class="page-subtitle">Fill out the project details and attach any relevant images or videos.</p>
+      </div>
+    </div>
+
+    <div class="form-panel">
+      {% include "pages/_project_form.html" %}
+    </div>
+  </div>
+</section>
+{% endblock content %}

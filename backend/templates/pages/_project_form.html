@@ -1,0 +1,109 @@
+{% if form.errors or media_formset.errors or media_formset.non_form_errors %}
+  <div class="message-banner message-error mb-6">
+    Please correct the errors below.
+    {% if media_formset.non_form_errors %}
+      {% for error in media_formset.non_form_errors %}
+        <p>{{ error }}</p>
+      {% endfor %}
+    {% endif %}
+  </div>
+{% endif %}
+
+<form
+  method="post"
+  enctype="multipart/form-data"
+  class="project-form"
+  id="project-form"
+  action="{% if form_mode == 'edit' and editing_project %}{% url 'project_edit' editing_project.pk %}{% else %}{% url 'home' %}{% endif %}"
+>
+  {% csrf_token %}
+
+  <div class="form-section">
+    <h3 class="form-section-title">Project Details</h3>
+    <div class="form-grid">
+      <div class="form-field">
+        <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+        {{ form.title }}
+        {% if form.title.errors %}<p class="field-error">{{ form.title.errors.0 }}</p>{% endif %}
+      </div>
+
+      <div class="form-field">
+        <label for="{{ form.project_type.id_for_label }}">{{ form.project_type.label }}</label>
+        {{ form.project_type }}
+        {% if form.project_type.errors %}<p class="field-error">{{ form.project_type.errors.0 }}</p>{% endif %}
+      </div>
+
+      <div class="form-field form-field-full">
+        <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+        {{ form.description }}
+        {% if form.description.errors %}<p class="field-error">{{ form.description.errors.0 }}</p>{% endif %}
+      </div>
+
+      <div class="form-field form-field-full">
+        <label for="{{ form.overview.id_for_label }}">{{ form.overview.label }}</label>
+        {{ form.overview }}
+        {% if form.overview.errors %}<p class="field-error">{{ form.overview.errors.0 }}</p>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <div class="form-section-header">
+      <h3 class="form-section-title">Media</h3>
+      <button type="button" id="add-media-btn" class="btn btn-secondary">+ Add Media</button>
+    </div>
+
+    {{ media_formset.management_form }}
+    <div id="media-forms" class="media-forms">
+      {% for media_form in media_formset %}
+        <div class="media-form">
+          {% if media_form.non_field_errors %}
+            <p class="field-error">{{ media_form.non_field_errors.0 }}</p>
+          {% endif %}
+          {% for hidden in media_form.hidden_fields %}{{ hidden }}{% endfor %}
+
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="{{ media_form.name.id_for_label }}">{{ media_form.name.label }}</label>
+              {{ media_form.name }}
+              {% if media_form.name.errors %}<p class="field-error">{{ media_form.name.errors.0 }}</p>{% endif %}
+            </div>
+            <div class="form-field">
+              <label for="{{ media_form.url.id_for_label }}">{{ media_form.url.label }}</label>
+              {{ media_form.url }}
+              {% if media_form.url.errors %}<p class="field-error">{{ media_form.url.errors.0 }}</p>{% endif %}
+            </div>
+          </div>
+
+          {% if media_formset.can_delete %}
+            <div class="hidden">{{ media_form.DELETE }}</div>
+            <button type="button" class="remove-media-btn btn btn-danger">Remove</button>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button type="button" id="cancel-form-btn" class="btn btn-secondary">Cancel</button>
+    <button type="submit" class="btn btn-primary">
+      {% if form_mode == 'edit' %}Save Changes{% else %}Create Project{% endif %}
+    </button>
+  </div>
+</form>
+
+<div id="empty-media-form" class="hidden">
+  <div class="media-form">
+    <div class="form-grid">
+      <div class="form-field">
+        <label>Media Name</label>
+        <input type="text" name="media-__prefix__-name" class="form-control" id="id_media-__prefix__-name" />
+      </div>
+      <div class="form-field">
+        <label>Media File</label>
+        <input type="file" name="media-__prefix__-url" class="form-control form-file" accept="image/*,video/*" id="id_media-__prefix__-url" />
+      </div>
+    </div>
+    <button type="button" class="remove-media-btn btn btn-danger">Remove</button>
+  </div>
+</div>

@@ -47,5 +47,11 @@ class ProjectMedia(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.project}"
-    
+
+    @property
+    def is_video(self):
+        if not self.url:
+            return False
+        video_extensions = (".mp4", ".webm", ".mov", ".avi", ".mkv", ".ogg")
+        return self.url.name.lower().endswith(video_extensions)
 
