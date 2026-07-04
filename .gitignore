@@ -272,6 +272,8 @@ dump.rdb
 
 ### Project template
 backend/media/
+backend/backend/games/
+backend/backend/game_zips/
 
 .pytest_cache/
 .ipython/
