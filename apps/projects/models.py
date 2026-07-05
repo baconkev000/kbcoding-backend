@@ -79,6 +79,8 @@ class ProjectMedia(models.Model):
     """
     name = models.CharField(max_length=255, blank=True, default="")
     url = models.FileField(blank=True, null=True)
+    poster = models.ImageField(blank=True, null=True, upload_to="")
+    thumbnail = models.ImageField(blank=True, null=True, upload_to="")
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="media")
 
     class Meta:

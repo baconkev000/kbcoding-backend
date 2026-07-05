@@ -5,14 +5,15 @@ from django.conf import settings
 from django.contrib import messages
 from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.cache import cache_control
 from django.views.decorators.clickjacking import xframe_options_sameorigin
+from django.views.static import serve
 from rest_framework import viewsets
 
 from apps.projects.constants import BUILDS, CREATIVE, LIFE_OTHER
 from apps.projects.forms import ProjectForm, ProjectMediaFormSet
-from apps.projects.models import Project, ProjectMedia, ProjectType, Tag
+from apps.projects.models import Project, ProjectType, Tag
 from apps.projects.serializers import (
-    ProjectMediaSerializer,
     ProjectSerializer,
     ProjectTypeSerializer,
     TagSerializer,
@@ -153,14 +154,14 @@ def serve_project_game(request, pk, path=""):
     )
 
 
-class ProjectTypeViewSet(viewsets.ModelViewSet):
+class ProjectTypeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = ProjectType.objects.all()
     serializer_class = ProjectTypeSerializer
     permission_classes = []
     authentication_classes = []
 
 
-class ProjectViewSet(viewsets.ModelViewSet):
+class ProjectViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Project.objects.prefetch_related("tags", "media").select_related("project_type")
     serializer_class = ProjectSerializer
     permission_classes = []
@@ -174,8 +175,6 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
     authentication_classes = []
 
 
-class ProjectMediaViewSet(viewsets.ModelViewSet):
-    queryset = ProjectMedia.objects.all()
-    serializer_class = ProjectMediaSerializer
-    permission_classes = []
-    authentication_classes = []
+@cache_control(public=True, max_age=31536000, immutable=True)
+def serve_cached_media(request, path):
+    return serve(request, path, document_root=settings.MEDIA_ROOT)
