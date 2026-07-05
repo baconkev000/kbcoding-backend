@@ -39,6 +39,8 @@ services:
       - backend-net
 
   docs:
+    profiles:
+      - docs
     image: backend_local_docs
     container_name: backend_local_docs
     build:
@@ -50,6 +52,8 @@ services:
       - ./docs:/docs:z
       - ./config:/app/config:z
       - ./backend:/app/backend:z
+      - ./apps:/app/apps:z
+      - ./manage.py:/app/manage.py:ro
     ports:
       - '9000:9000'
     command: /start-docs

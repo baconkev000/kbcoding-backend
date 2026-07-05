@@ -15,9 +15,16 @@ APP = /app
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O) -c .
 
-# Build, watch and serve docs with live reload
+# Build, watch and serve docs with live reload (docs sources only; do not watch /app)
 livehtml:
-	sphinx-autobuild -b html --host 0.0.0.0 --port 9000 --watch $(APP) -c . $(SOURCEDIR) $(BUILDDIR)/html
+	sphinx-autobuild -b html --host 0.0.0.0 --port 9000 \
+		--ignore "*/media/*" \
+		--ignore "*/_build/*" \
+		--ignore "*/staticfiles/*" \
+		--ignore "*/node_modules/*" \
+		--ignore "*/.git/*" \
+		--ignore "*/.angular/*" \
+		-c . $(SOURCEDIR) $(BUILDDIR)/html
 
 # Outputs rst files from django application code
 apidocs:

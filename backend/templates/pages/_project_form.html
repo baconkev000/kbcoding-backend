@@ -1,0 +1,212 @@
+{% if form.errors or media_formset.errors or media_formset.non_form_errors %}
+  <div class="message-banner message-error mb-6">
+    Please correct the errors below.
+    {% if media_formset.non_form_errors %}
+      {% for error in media_formset.non_form_errors %}
+        <p>{{ error }}</p>
+      {% endfor %}
+    {% endif %}
+  </div>
+{% endif %}
+
+<form
+  method="post"
+  enctype="multipart/form-data"
+  class="project-form"
+  id="project-form"
+  action="{% if form_mode == 'edit' and editing_project %}{% url 'project_edit' editing_project.pk %}{% else %}{% url 'home' %}{% endif %}"
+>
+  {% csrf_token %}
+
+  <div class="form-section">
+    <h3 class="form-section-title">Project Details</h3>
+    <div class="form-grid">
+      <div class="form-field">
+        <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+        {{ form.title }}
+        {% if form.title.errors %}<p class="field-error">{{ form.title.errors.0 }}</p>{% endif %}
+      </div>
+
+      <div class="form-field">
+        <label for="{{ form.project_type.id_for_label }}">{{ form.project_type.label }}</label>
+        {{ form.project_type }}
+        {% if form.project_type.errors %}<p class="field-error">{{ form.project_type.errors.0 }}</p>{% endif %}
+      </div>
+
+      <div id="role-field" class="form-field form-field-full hidden type-field" data-show-for="builds">
+        <label for="{{ form.role.id_for_label }}">{{ form.role.label }}</label>
+        {{ form.role }}
+        {% if form.role.errors %}<p class="field-error">{{ form.role.errors.0 }}</p>{% endif %}
+      </div>
+
+      <div id="project-url-field" class="form-field form-field-full hidden type-field" data-show-for="builds">
+        <label for="{{ form.project_url.id_for_label }}">{{ form.project_url.label }}</label>
+        {{ form.project_url }}
+        {% if form.project_url.errors %}<p class="field-error">{{ form.project_url.errors.0 }}</p>{% endif %}
+      </div>
+
+      <div id="github-url-field" class="form-field form-field-full hidden type-field" data-show-for="builds">
+        <label for="{{ form.github_url.id_for_label }}">{{ form.github_url.label }}</label>
+        {{ form.github_url }}
+        {% if form.github_url.errors %}<p class="field-error">{{ form.github_url.errors.0 }}</p>{% endif %}
+      </div>
+
+      <div id="platform-field" class="form-field form-field-full hidden type-field" data-show-for="builds">
+        <label for="{{ form.platform.id_for_label }}">{{ form.platform.label }}</label>
+        {{ form.platform }}
+        {% if form.platform.errors %}<p class="field-error">{{ form.platform.errors.0 }}</p>{% endif %}
+      </div>
+
+      <div id="tech-field" class="form-field form-field-full hidden type-field" data-show-for="builds">
+        <label for="tech-tag-input">{{ form.tech.label }}</label>
+        <div id="tech-tags" class="tech-tags"></div>
+        <input type="text" id="tech-tag-input" class="form-control" placeholder="Type a name and press Enter" autocomplete="off" />
+        {{ form.tech }}
+        {% if form.tech.errors %}<p class="field-error">{{ form.tech.errors.0 }}</p>{% endif %}
+      </div>
+
+      <div id="tags-field" class="form-field form-field-full">
+        <label for="category-tag-input">Tags</label>
+        <div id="category-tags" class="tech-tags"></div>
+        <input
+          type="text"
+          id="category-tag-input"
+          class="form-control"
+          list="category-tag-suggestions"
+          placeholder="Type a tag and press Enter, or pick an existing one"
+          autocomplete="off"
+        />
+        <datalist id="category-tag-suggestions"></datalist>
+        {{ form.tag_names }}
+      </div>
+
+      <div
+        id="type-field-config"
+        class="hidden"
+        data-builds-id="{{ builds_type_id }}"
+        data-creative-id="{{ creative_type_id }}"
+        data-life-id="{{ life_type_id }}"
+      ></div>
+
+      <div class="form-field form-field-full">
+        <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+        {{ form.description }}
+        {% if form.description.errors %}<p class="field-error">{{ form.description.errors.0 }}</p>{% endif %}
+      </div>
+
+      <div class="form-field form-field-full">
+        <label for="{{ form.overview.id_for_label }}">{{ form.overview.label }}</label>
+        {{ form.overview }}
+        {% if form.overview.errors %}<p class="field-error">{{ form.overview.errors.0 }}</p>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div id="display-mode-section" class="form-section hidden type-field" data-show-for="builds">
+    <h3 class="form-section-title">Build Display</h3>
+    <div class="form-field form-field-full">
+      <fieldset class="display-mode-fieldset">
+        <legend class="sr-only">{{ form.display_mode.label }}</legend>
+        {% for radio in form.display_mode %}
+          <label class="display-mode-option">{{ radio.tag }} {{ radio.choice_label }}</label>
+        {% endfor %}
+      </fieldset>
+      {% if form.display_mode.errors %}<p class="field-error">{{ form.display_mode.errors.0 }}</p>{% endif %}
+    </div>
+  </div>
+
+  <div id="game-upload-section" class="form-section hidden">
+    <h3 class="form-section-title">Playable Web Game</h3>
+    <p class="form-help-text">Upload a .zip containing your web export (Godot, Unity WebGL, etc.) with an index.html entry point.</p>
+    <div class="form-field form-field-full">
+      <label for="{{ form.game_zip.id_for_label }}">{{ form.game_zip.label }}</label>
+      {{ form.game_zip }}
+      {% if form.game_zip.errors %}<p class="field-error">{{ form.game_zip.errors.0 }}</p>{% endif %}
+    </div>
+  </div>
+
+  <div id="media-upload-section" class="form-section">
+    <div class="form-section-header">
+      <h3 class="form-section-title">Media</h3>
+      <div class="media-toolbar">
+        <label class="btn btn-secondary media-upload-label">
+          Upload Files
+          <input type="file" id="bulk-media-upload" class="hidden-file-input" multiple accept="image/*,video/*" />
+        </label>
+        <button type="button" id="delete-selected-media-btn" class="btn btn-danger">Delete Selected</button>
+      </div>
+    </div>
+
+    {{ media_formset.management_form }}
+    <div id="media-forms" class="media-forms">
+      {% for media_form in media_formset %}
+        <div class="media-form{% if media_form.instance.pk %} media-form-existing{% endif %}">
+          {% if media_form.non_field_errors %}
+            <p class="field-error">{{ media_form.non_field_errors.0 }}</p>
+          {% endif %}
+          {% for hidden in media_form.hidden_fields %}{{ hidden }}{% endfor %}
+
+          <label class="media-select-label">
+            <input type="checkbox" class="media-select-checkbox" />
+            <span>Select for deletion</span>
+          </label>
+
+          {% if media_form.instance.pk and media_form.instance.url %}
+            <div class="media-preview">
+              {% if media_form.instance.is_video %}
+                <video controls class="media-preview-item">
+                  <source src="{{ media_form.instance.url.url }}" />
+                </video>
+              {% else %}
+                <img src="{{ media_form.instance.url.url }}" alt="{{ media_form.instance.name }}" class="media-preview-item" />
+              {% endif %}
+            </div>
+          {% endif %}
+
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="{{ media_form.name.id_for_label }}">{{ media_form.name.label }}</label>
+              {{ media_form.name }}
+              {% if media_form.name.errors %}<p class="field-error">{{ media_form.name.errors.0 }}</p>{% endif %}
+            </div>
+            <div class="form-field">
+              <label for="{{ media_form.url.id_for_label }}">{{ media_form.url.label }}</label>
+              {{ media_form.url }}
+              {% if media_form.url.errors %}<p class="field-error">{{ media_form.url.errors.0 }}</p>{% endif %}
+            </div>
+          </div>
+
+          {% if media_formset.can_delete %}
+            <div class="hidden">{{ media_form.DELETE }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button type="button" id="cancel-form-btn" class="btn btn-secondary">Cancel</button>
+    <button type="submit" class="btn btn-primary">
+      {% if form_mode == 'edit' %}Save Changes{% else %}Create Project{% endif %}
+    </button>
+  </div>
+</form>
+
+<div id="empty-media-form" class="hidden">
+  <div class="media-form">
+    <label class="media-select-label">
+      <input type="checkbox" class="media-select-checkbox" />
+      <span>Select for deletion</span>
+    </label>
+    <div class="form-grid">
+      <div class="form-field">
+        <label>Media Name</label>
+        <input type="text" name="media-__prefix__-name" class="form-control" id="id_media-__prefix__-name" />
+      </div>
+      <div class="form-field">
+        <label>Media File</label>
+        <input type="file" name="media-__prefix__-url" class="form-control form-file" accept="image/*,video/*" id="id_media-__prefix__-url" />
+      </div>
+    </div>
+  </div>
+</div>
