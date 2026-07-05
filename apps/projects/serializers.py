@@ -56,6 +56,7 @@ class TagListField(serializers.Field):
 class ProjectSerializer(serializers.ModelSerializer):
     media = ProjectMediaSerializer(many=True, read_only=True)
     project_type_name = serializers.CharField(source="project_type.name", read_only=True)
+    project_type_color = serializers.CharField(source="project_type.color", read_only=True, allow_null=True)
     game_url = serializers.SerializerMethodField()
     tags = TagListField(read_only=True)
 
@@ -75,6 +76,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             "game_entry_point",
             "project_type",
             "project_type_name",
+            "project_type_color",
             "game_url",
             "tags",
             "media",
